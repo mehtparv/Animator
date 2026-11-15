@@ -1,0 +1,382 @@
+/* All styling for the Animator app. The .gleam files only attach class names. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+/* ── Layout: two columns ─────────────────────────────────────────────────── */
+
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a2e;
+  color: #d4c5a0;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* Left column: the code editor. */
+.code-col {
+  width: 42%;
+  min-width: 320px;
+  max-width: 720px;
+  flex-shrink: 0;
+  display: flex;
+  border-right: 1px solid #3a3a5e;
+  background: #0f0f1e;
+}
+
+/* The code column stays in the DOM when collapsed, so CodeMirror keeps its
+   state; hiding it gives the right column the full width. */
+.app.code-hidden .code-col { display: none; }
+
+/* A small emoji button (the code pane's collapse toggle, and the playback
+   controls once they exist). */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a2a4a;
+  color: #d4c5a0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 5px 8px;
+}
+.icon-btn:hover { background: #3a3a5e; }
+
+/* ── Code panel (left column) ───────────────────────────────────────────── */
+
+.code-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #1a1a3e;
+  border-bottom: 1px solid #3a3a5e;
+}
+.code-title {
+  color: #e8d8b0;
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+/* Wrapper holding the editor. */
+.code-editor-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+}
+/* CodeMirror mount node: grows to fill the panel. */
+.code-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  background: #0d0d1a;
+}
+.code-editor .cm-editor { width: 100%; height: 100%; }
+
+/* Collapsible reference of the built-ins available to draw functions. */
+.reference {
+  margin: 8px 14px 0;
+  border: 1px solid #3a3a5e;
+  border-radius: 4px;
+  background: #0d0d1a;
+  overflow: hidden;
+}
+.reference-summary {
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 12px;
+  user-select: none;
+}
+.reference-summary:hover { color: #e8d8b0; }
+.reference-body {
+  padding: 4px 12px 10px;
+  border-top: 1px solid #3a3a5e;
+}
+.reference-group { margin-top: 8px; }
+.reference-group-title {
+  color: #8a8aca;
+  font-family: monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.reference-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 1px 0;
+}
+.reference-sig {
+  color: #89ddff;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre;
+}
+.reference-desc { color: #6a7a8a; font-size: 11px; }
+
+/* ── Animation area (right column) ──────────────────────────────────────── */
+
+.canvas-area {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a14;
+  container-type: size;
+}
+
+/* Toolbar: open/create/save drawings and shape/speed controls. */
+.anim-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(15, 15, 30, 0.88);
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+}
+.app.code-hidden .anim-toolbar { padding-left: 44px; }
+
+.drawing-select {
+  min-width: 120px;
+  max-width: 200px;
+  background: #1a1a3e;
+  color: #e8d8b0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 13px;
+}
+.toolbar-btn {
+  background: #2a2a4a;
+  color: #d4c5a0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 5px 10px;
+}
+.toolbar-btn:hover { background: #3a3a5e; }
+.toolbar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.toolbar-btn.sketch-btn.active {
+  background: #2a4a5e;
+  border-color: #7ec8e3;
+  color: #c8e8f5;
+}
+.color-picks {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 8px;
+  margin-left: 2px;
+  border-left: 1px solid #3a3a5e;
+}
+.color-picks-label {
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 12px;
+}
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #2a2a42;
+  cursor: pointer;
+  color: #1a1a2e;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+}
+.color-swatch:hover { transform: scale(1.08); }
+.color-swatch.on {
+  border-color: #f4f1ea;
+  box-shadow: 0 0 0 1px #1a1a2e;
+}
+/* Square stage: canvas fills it; knobs sit on the bottom corners. */
+.canvas-stage {
+  position: relative;
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+  flex-shrink: 0;
+}
+.canvas-stage .canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.etch-knobs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+.etch-knobs.hidden {
+  visibility: hidden;
+}
+.etch-knob {
+  position: absolute;
+  bottom: 14px;
+  width: 72px;
+  height: 72px;
+  pointer-events: auto;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+.etch-knob.turning {
+  cursor: grabbing;
+}
+.etch-knob-x { left: 14px; }
+.etch-knob-y { right: 14px; }
+
+.etch-knob-face {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, #5a5a7a 0%, #2a2a42 55%, #12121e 100%);
+  border: 3px solid #6a6a9a;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.12),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.45),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+.etch-knob.turning .etch-knob-face {
+  border-color: #7ec8e3;
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.14),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.45),
+    0 0 0 2px rgba(126, 200, 227, 0.35),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.etch-knob-marker {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 6px;
+  height: 18px;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: #e8d8b0;
+  box-shadow: 0 0 4px rgba(232, 216, 176, 0.5);
+}
+.etch-knob-label {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+@keyframes sketch-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 3px) rotate(-0.4deg); }
+  40% { transform: translate(5px, -4px) rotate(0.5deg); }
+  60% { transform: translate(-4px, -2px) rotate(-0.3deg); }
+  80% { transform: translate(4px, 3px) rotate(0.3deg); }
+}
+.app.sketch-on.shake .canvas {
+  animation: sketch-shake 0.45s ease-in-out;
+}
+
+.slider-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #b8a888;
+  font-size: 12px;
+  font-family: monospace;
+}
+.slider {
+  width: 120px;
+  accent-color: #8a8aca;
+  cursor: pointer;
+}
+
+.error-banner {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 5;
+  margin: 0;
+  padding: 12px 14px;
+  max-height: 35%;
+  overflow: auto;
+  background: rgba(40, 12, 20, 0.92);
+  border: 1px solid #8a3a4a;
+  border-radius: 4px;
+  color: #ffb0b8;
+}
+.error-title {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffd0d6;
+  margin-bottom: 6px;
+}
+.error-detail {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Button that reveals the code column again when it is hidden. */
+.reveal-code {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+}
+
+/* A centred square that fits the (possibly non-square) animation area. Give your
+   <canvas> this class, so that drawings aren't stretched. */
+.canvas {
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+}
+
